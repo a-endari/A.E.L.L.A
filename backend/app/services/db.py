@@ -113,11 +113,21 @@ def add_card(list_id: int, card_data: Dict[str, Any]):
     clean_word = card_data.get('clean_word')
     if clean_word:
         try:
+            # Check if exists first (User request: don't allow duplicate)
+            existing = conn.execute(
+                'SELECT 1 FROM cards WHERE list_id = ? AND clean_word = ?',
+                (list_id, clean_word)
+            ).fetchone()
+            
+            if existing:
+                return False # Duplicate
+
             conn.execute(
-                'INSERT OR REPLACE INTO cards (clean_word, list_id, data) VALUES (?, ?, ?)',
+                'INSERT INTO cards (clean_word, list_id, data) VALUES (?, ?, ?)',
                 (clean_word, list_id, json.dumps(card_data))
             )
             conn.commit()
+            return True
         except Exception as e:
             print(f"Error saving card: {e}")
     conn.close()

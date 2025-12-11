@@ -23,7 +23,7 @@ async def create_obsidian_zip(cards: List[Dict[str, Any]], note_name: str = "My 
     readme_content = """# Obsidian Export Guide
 
 1.  **Extract** this zip file.
-1.  **Extract** this zip file.
+
 2.  Copy the markdown file (e.g. `German Verbs.md`) and the `Media` folder into your Obsidian Vault.
 3.  **Important**: Ensure Obsidian can see the media files.
     -   Go to **Settings > Files & Links**.
@@ -71,6 +71,7 @@ This note uses Obsidian Callouts (e.g., `> [!NOTE]`). They are supported nativel
                 
                 words_md_content += "> ---\n"
                 words_md_content += f"> **English**: {english}\n"
+                words_md_content += f">\n"
                 words_md_content += "> ---\n"
                 
                 # Handle multi-line Persian definitions inside the quote block

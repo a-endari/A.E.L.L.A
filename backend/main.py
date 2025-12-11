@@ -1,7 +1,11 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+import asyncio
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from app.services.translation import translate_text_async, scrape_persian_definitions
+from app.services.translation import translate_text_async, get_persian_definition_async, get_word_with_article_async
+
+
 from app.services.synonyms import get_synonyms_async
 from app.services.pronunciation import get_audio_url_async
 from app.services.text_processing import remove_article
@@ -20,6 +24,58 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Ensure static directory exists (optional, but good practice)
+import os
+os.makedirs("static/audio", exist_ok=True)
+
+# Mount Static Files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+def cleanup_unused_audio():
+    """
+    Deletes audio files in static/audio that are not referenced in the database.
+    This runs on startup to keep app size low.
+    """
+    try:
+        print("Starting Audio Cleanup...")
+        audio_dir = "static/audio"
+        if not os.path.exists(audio_dir):
+            return
+
+        # 1. Get all saved words from all lists
+        lists = get_lists()
+        all_saved_words = set()
+        for lst in lists:
+            cards = get_cards_for_list(lst['id'])
+            for card in cards:
+                # We expect card['clean_word'] to map to filename
+                # If we used sanitize_filename in pronunciation, we must replicate logic here
+                # Simplified: matches pronunciation.py logic
+                word = card.get('clean_word', '')
+                if word:
+                    # Logic from pronunciation.py: sanitize_filename
+                    import re
+                    clean = re.sub(r'[^\w\-\.]', '_', word) + ".mp3"
+                    all_saved_words.add(clean)
+
+        # 2. Iterate files and delete unused
+        deleted_count = 0
+        for filename in os.listdir(audio_dir):
+            if filename.endswith(".mp3"):
+                if filename not in all_saved_words:
+                    # Delete!
+                    os.remove(os.path.join(audio_dir, filename))
+                    deleted_count += 1
+        
+        print(f"Cleanup Complete. Deleted {deleted_count} unused audio files.")
+
+    except Exception as e:
+        print(f"Error during audio cleanup: {e}")
+
+@app.on_event("startup")
+async def startup_event():
+    cleanup_unused_audio()
 
 class WordRequest(BaseModel):
     word: str
@@ -42,27 +98,41 @@ async def lookup_word(request: WordRequest):
     # Replacing specialized grabber with generic translator as requested    # Run tasks concurrently
     # definition_future = definition_grabber_async(clean_word) # Old
     
-    definition_future = None
+    # Create concurrent tasks
+    tasks = []
+    
+    # Task 1: Persian Definition
     if request.include_persian:
-        definition_future = scrape_persian_definitions(clean_word) # New
-    
-    audio_future = get_audio_url_async(clean_word)
-    
-    english_future = translate_text_async(clean_word, source='de', target='en')
-    
-    synonyms_future = get_synonyms_async(clean_word)
+        tasks.append(get_persian_definition_async(clean_word))
+    else:
+        tasks.append(asyncio.sleep(0, result=[])) # Dummy task
 
-    definitions_list = await definition_future if definition_future else []
-    audio_data = await audio_future
-    english_definition = await english_future
-    synonyms = await synonyms_future
+    # Task 2: Audio
+    tasks.append(get_audio_url_async(clean_word))
+
+    # Task 3: English Definition
+    tasks.append(translate_text_async(clean_word, source='de', target='en'))
+
+    # Task 4: Synonyms
+    tasks.append(get_synonyms_async(clean_word))
+
+    # Task 5: Article Detection (Correct "der/die/das" without scraping)
+    tasks.append(get_word_with_article_async(clean_word))
+
+    # Execute all in parallel
+    results = await asyncio.gather(*tasks)
+    
+    definitions_list = results[0]
+    audio_data = results[1]
+    english_definition = results[2]
+    synonyms = results[3]
+    article_word = results[4]
 
     audio_url = audio_data.get("audio_url") if audio_data else None
-    canonical_word = audio_data.get("canonical_word") if audio_data else None
-
-    # Use canonical word (with correct article) as clean_word for display if available
-    # Otherwise fallback to the locally cleaned word
-    final_display_word = canonical_word if canonical_word else clean_word
+    
+    # Logic: Prioritize the "Article Detected" word as our main display word
+    # audio_data's "canonical_word" is now just the input word since we removed scraping.
+    final_display_word = article_word if article_word else clean_word
 
     return {
         "original_word": raw_word,
@@ -117,8 +187,11 @@ async def read_list_cards(list_id: int):
 
 @app.post("/api/lists/{list_id}/cards")
 async def save_card_to_list(list_id: int, card: dict):
-    add_card(list_id, card)
-    return {"status": "success", "word": card.get("clean_word")}
+    if add_card(list_id, card):
+        return {"status": "success", "word": card.get("clean_word")}
+    else:
+        # 409 Conflict for duplicates
+        raise HTTPException(status_code=409, detail="Card already exists in this list")
 
 @app.delete("/api/lists/{list_id}/cards/{word}")
 async def remove_card_from_list(list_id: int, word: str):

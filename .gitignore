@@ -68,3 +68,15 @@ $RECYCLE.BIN/
 *.msp
 *.lnk
 codebase_overview.md
+
+# Audio files
+backend/static/audio/*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Test files
+**/test_*.py
+**/tests/
