@@ -87,7 +87,7 @@ async def download_anki_deck(request: AnkiRequest, deck_name: str = "Universal L
 @app.post("/api/obsidian/download")
 async def download_obsidian_zip(request: AnkiRequest, note_name: str = "My Vocabulary"):
     # Note: note_name can be passed as query param
-    zip_stream = await create_obsidian_zip(request.cards) # Obsidian logic might need update too if we want to change internal filename
+    zip_stream = await create_obsidian_zip(request.cards, note_name) # Obsidian logic updated
     filename = f"{note_name.replace(' ', '_')}.zip"
     headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
     return Response(content=zip_stream.read(), media_type="application/zip", headers=headers)

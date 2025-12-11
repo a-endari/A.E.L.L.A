@@ -4,21 +4,27 @@ import aiohttp
 import asyncio
 from typing import List, Dict, Any
 
-async def create_obsidian_zip(cards: List[Dict[str, Any]]) -> io.BytesIO:
+async def create_obsidian_zip(cards: List[Dict[str, Any]], note_name: str = "My Vocabulary") -> io.BytesIO:
     """
     Generates a ZIP file compatible with Obsidian.
     Contains:
-    1. Words.md (The main note)
+    1. {NoteName}.md (The main note)
     2. README.md (Instructions)
     3. Media/ (Folder with MP3s)
     """
     zip_buffer = io.BytesIO()
     
-    words_md_content = "# My Vocabulary\n\n"
+    # Use Title Case for the header and filename
+    # e.g. "german verbs" -> "German Verbs"
+    # Note: .title() can be basic, but usually sufficient.
+    display_title = note_name.title()
+    
+    words_md_content = f"# {display_title}\n\n"
     readme_content = """# Obsidian Export Guide
 
 1.  **Extract** this zip file.
-2.  Copy `Words.md` and the `Media` folder into your Obsidian Vault.
+1.  **Extract** this zip file.
+2.  Copy the markdown file (e.g. `German Verbs.md`) and the `Media` folder into your Obsidian Vault.
 3.  **Important**: Ensure Obsidian can see the media files.
     -   Go to **Settings > Files & Links**.
     -   Check "Default location for new attachments". If it's "Same folder as current file" or "In subfolder under current folder", you are good to go if you keep the structure.
@@ -46,13 +52,13 @@ This note uses Obsidian Callouts (e.g., `> [!NOTE]`). They are supported nativel
                 synonyms = ", ".join(card.get('synonyms', []))
                 audio_url = card.get('audio_url')
                 
-                # Append to Words.md
-                words_md_content += f"## {clean_word}\n"
+                # Append to Words.md (Callout Format)
+                # Note: 'tldr' is a common callout type, '-' makes it collapsible (collapsed by default)
+                words_md_content += f"> [!tldr]- {clean_word}\n"
                 
                 if audio_url:
                     filename = f"{clean_word}.mp3"
-                    # Add audio link (Obsidian format)
-                    words_md_content += f"![[{filename}]]\n\n"
+                    words_md_content += f"> ![[{filename}]]\n"
                     
                     # Download and add to zip
                     try:
@@ -63,16 +69,24 @@ This note uses Obsidian Callouts (e.g., `> [!NOTE]`). They are supported nativel
                     except Exception as e:
                         print(f"Failed to download audio for {clean_word}: {e}")
                 
-                words_md_content += f"**English**: {english}  \n"
-                words_md_content += f"**Persian**:\n{definition_text}  \n"
+                words_md_content += "> ---\n"
+                words_md_content += f"> **English**: {english}\n"
+                words_md_content += "> ---\n"
+                
+                # Handle multi-line Persian definitions inside the quote block
+                if definition_text:
+                    formatted_persian = definition_text.replace('\n', '\n> ')
+                    words_md_content += f"> **فارسی**:\n> {formatted_persian}\n"
+                
+                words_md_content += "> ---\n"
                 
                 if synonyms:
-                    words_md_content += f"\n> [!NOTE] Synonyms\n> {synonyms}\n"
+                     words_md_content += f"> **Synonyms**: {synonyms}\n"
                 
-                words_md_content += "\n---\n\n"
+                words_md_content += "\n"
 
-            # Add Words.md
-            zf.writestr("Words.md", words_md_content)
+            # Add Main Note
+            zf.writestr(f"{display_title}.md", words_md_content)
 
     zip_buffer.seek(0)
     return zip_buffer
