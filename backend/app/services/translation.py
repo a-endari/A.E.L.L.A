@@ -2,60 +2,31 @@ import asyncio
 import aiohttp
 import requests
 from bs4 import BeautifulSoup
+from deep_translator import GoogleTranslator
 
-def definition_grabber(german_word: str) -> str:
-    url = f"https://dic.b-amooz.com/de/dictionary/w?word={german_word}"
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.78 Safari/537.36",
-    }
-    
-    try:
-        response = requests.get(url, headers=headers, timeout=10)
-        if response.status_code == 200:
-            return parse_definition(response.text)
-    except Exception as e:
-        print(f"Error fetching definition: {e}")
-    return ""
 
 
 def parse_definition(html):
-    """Parse HTML to extract definition"""
-    persian_definition = ""
-    synonyms_list = ""
+    """Parse HTML to extract definitions list"""
+    definitions = []
     
     soup = BeautifulSoup(html, "html.parser")
-    persian_defenitions = soup.find("div", id="quick-access")
+    # Quick access usually contains the numbered definitions
+    quick_access = soup.find("div", id="quick-access")
 
-    if persian_defenitions:  # Check if definitions were found
-        all_defs = persian_defenitions.find_all("span")
-        my_list = [word.text.lstrip().strip() for word in all_defs]
-        for i in my_list[1:-1]:
-            persian_definition = persian_definition + f"> {i}\n"
+    if quick_access:
+        spans = quick_access.find_all("span")
+        # Text cleaning: Remove empty strings
+        raw_texts = [s.get_text(strip=True) for s in spans]
+        # Filter: B-amooz often has empty spans or just numbers.
+        # The test showed ['1 . قطار', '2 . جرعه'] which is perfect.
+        definitions = [t for t in raw_texts if t]
+    
+    return definitions if definitions else ["No definition found"]
 
-    synonyms = soup.find(name="div", attrs={"class": "mt-3 mb-1"})
-    if synonyms:
-        # Get all text elements and clean them
-        synonym_elements = synonyms.find_all(string=True)
-        # Filter out '+' signs and empty strings, then strip whitespace
-        clean_synonyms = [
-            word.strip()
-            for word in synonym_elements
-            if word.strip() and word.strip() != "+"
-        ]
-
-        synonyms_list = "> **مترادف و متضاد ها:**\n> "
-        # Join only the actual words with a single +
-        synonyms_list += " + ".join(
-            clean_synonyms[1:]
-        )  # Start from index 1 to skip the header
-        synonyms_list += "\n"
-    return persian_definition + synonyms_list
-
-
-async def definition_grabber_async(german_word: str) -> str:
-    """Async version of definition_grabber"""
-    # Initialize variables
+async def scrape_persian_definitions(german_word: str) -> list[str]:
+    """Async version of definition scraper"""
     url = f"https://dic.b-amooz.com/de/dictionary/w?word={german_word}"
     
     headers = {
@@ -67,9 +38,29 @@ async def definition_grabber_async(german_word: str) -> str:
             async with session.get(url, headers=headers) as response:
                 if response.status == 200:
                     html = await response.text()
-                    # Use run_in_executor for BeautifulSoup parsing as it's CPU-bound
                     loop = asyncio.get_running_loop()
                     return await loop.run_in_executor(None, parse_definition, html)
     except Exception as e:
         print(f"Error fetching definition async: {e}")
-    return ""
+    return []
+
+
+
+
+async def translate_text_async(text: str, source: str = 'de', target: str = 'en') -> str:
+    """
+    Generic async translation using GoogleTranslator (deep-translator).
+    This supports the user's desire for a wide variety of languages eventually.
+    """
+    try:
+        # deep-translator is blocking, so run in executor
+        loop = asyncio.get_running_loop()
+        def _translate():
+            translator = GoogleTranslator(source=source, target=target)
+            return translator.translate(text)
+        
+        result = await loop.run_in_executor(None, _translate)
+        return result if result else ""
+    except Exception as e:
+        print(f"Error translating to {target}: {e}")
+        return ""

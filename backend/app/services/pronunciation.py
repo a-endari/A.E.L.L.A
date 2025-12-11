@@ -23,29 +23,36 @@ def get_audio_url(german_word):
 
 
 def parse_audio_url(html):
-    """Parse HTML to extract audio URL"""
+    """Parse HTML to extract audio URL and the canonical word (with article)"""
     soup = BeautifulSoup(html, "html.parser")
     
-    # Try the original method first
-    div = soup.find("h1", class_="mdc-typography--headline4 ltr d-inline position-relative")
-    
-    if div and div.find("small") and "data-url" in div.find("small").attrs:
-        audio_link = div.find("small")["data-url"]
-        return audio_link
+    audio_link = None
+    canonical_word = None
+
+    # Try to find the canonical word (e.g. "das Haus")
+    h1 = soup.find("h1", class_="mdc-typography--headline4 ltr d-inline position-relative")
+    if h1:
+        canonical_word = h1.get_text(strip=True)
+
+    # Try the original method first for audio
+    if h1 and h1.find("small") and "data-url" in h1.find("small").attrs:
+        audio_link = h1.find("small")["data-url"]
         
-    # Alternative method - look for any audio element
-    audio_elements = soup.find_all("audio")
-    for audio in audio_elements:
-        if audio.has_attr("src"):
-            return audio["src"]
+    if not audio_link:
+        # Alternative method - look for any audio element
+        audio_elements = soup.find_all("audio")
+        for audio in audio_elements:
+            if audio.has_attr("src"):
+                audio_link = audio["src"]
+                break
             
-    # Try to find any element with data-url attribute
-    elements_with_data_url = soup.find_all(attrs={"data-url": True})
-    if elements_with_data_url:
-        audio_link = elements_with_data_url[0]["data-url"]
-        return audio_link
+    if not audio_link:
+        # Try to find any element with data-url attribute
+        elements_with_data_url = soup.find_all(attrs={"data-url": True})
+        if elements_with_data_url:
+            audio_link = elements_with_data_url[0]["data-url"]
     
-    return None
+    return {"audio_url": audio_link, "canonical_word": canonical_word}
 
 async def get_audio_url_async(german_word: str) -> str | None:
     """Async version of get_audio_url"""
@@ -64,4 +71,4 @@ async def get_audio_url_async(german_word: str) -> str | None:
                     return await loop.run_in_executor(None, parse_audio_url, html)
     except Exception as e:
         print(f"Error getting audio url async: {e}")
-    return None
+    return {"audio_url": None, "canonical_word": None}

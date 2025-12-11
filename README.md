@@ -1,6 +1,6 @@
 # 🌐 Universal Language App (Project A.E.L.L.A.)
 
-> **V.O.C.A.E.** — *Vocabulary Organized Clearly And Effectively* (or *Voice of Abbas Endari*)
+> **A.E.L.L.A.** — *All Encapsulated Language Learning Assistant* (or *Abbas Endari Language Learning Assistant😉*)
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Python](https://img.shields.io/badge/Backend-FastAPI-blue?logo=python&logoColor=white)
@@ -39,33 +39,22 @@ A scalable, comprehensive language learning companion designed to be your **Pers
 
 ### Prerequisites
 - Node.js (v18+)
-- Python (v3.9+)
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
 
-### Installation
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/yourusername/UniversalLanguageApp.git
-    cd UniversalLanguageApp
-    ```
-
-2.  **Setup Backend**
-    ```bash
-    cd backend
-    python -m venv venv
-    source venv/bin/activate  # or venv\Scripts\activate on Windows
-    pip install -r requirements.txt
-    python main.py
-    ```
-
-3.  **Setup Frontend**
-    ```bash
-    cd frontend
-    npm install
-    npm run dev
-    ```
-
-Open [http://localhost:3000](http://localhost:3000) to view the app!
+Visit `http://localhost:3000` to start learning!
 
 ---
 
