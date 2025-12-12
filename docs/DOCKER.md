@@ -3,15 +3,38 @@
 ## Prerequisites
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
 
+## Option 1: Use Pre-built Images (Fastest)
+
+Pull and run pre-built images from GitHub Container Registry:
+
+```bash
+# Clone the repository
+git clone https://github.com/a-endari/A.E.L.L.A.git
+cd A.E.L.L.A
+
+# Run using pre-built images
+docker-compose -f docker-compose.ghcr.yml up
+```
+
+This downloads ready-to-use images (~500MB) and starts immediately!
+
+---
+
+## Option 2: Build Locally
+
+Build the images yourself (takes 5-10 minutes first time):
+
+```bash
+git clone https://github.com/a-endari/A.E.L.L.A.git
+cd A.E.L.L.A
+docker-compose up --build
+```
+
+---
+
 ## Running with Docker
 
-1. **Clone the repository**
-   ```bash
-   git clone &lt;your-repo-url&gt;
-   cd UniversalLanguageApp
-   ```
-
-2. **Start the application**
+1. **Start the application**
    ```bash
    docker-compose up
    ```
