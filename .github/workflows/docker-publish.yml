@@ -10,7 +10,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  # Using clean name since A.E.L.L.A. contains invalid characters for Docker tags
+  IMAGE_NAME: a-endari/aella
 
 jobs:
   build-and-push:
