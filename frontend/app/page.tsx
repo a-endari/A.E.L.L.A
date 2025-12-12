@@ -401,31 +401,33 @@ export default function Home() {
           </div>
 
           {/* List Selector */}
-          <div className="relative group/list">
-            <div className="flex items-center justify-between px-3 py-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border)]">
-              <div className="flex items-center gap-2 text-sm text-[var(--text-main)]">
-                <FolderOpen size={14} style={{ color: 'var(--accent)' }} />
-                <span className="truncate max-w-[140px]">{activeList?.name || "No Lists"}</span>
+          <div className="space-y-1">
+            <div className="relative">
+              <div className="flex items-center justify-between px-3 py-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border)]">
+                <div className="flex items-center gap-2 text-sm text-[var(--text-main)]">
+                  <FolderOpen size={14} style={{ color: 'var(--accent)' }} />
+                  <span className="truncate max-w-[140px]">{activeList?.name || "No Lists"}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <ChevronDown size={14} className="text-[var(--text-muted)]" />
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                {lists.length > 1 && (
-                  <select
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => {
-                      const l = lists.find(x => x.id === parseInt(e.target.value));
-                      if (l) setActiveList(l);
-                    }}
-                    value={activeList?.id}
-                  >
-                    {lists.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-                  </select>
-                )}
-                <ChevronDown size={14} className="text-[var(--text-muted)]" />
-              </div>
+              {lists.length > 1 && (
+                <select
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  onChange={(e) => {
+                    const l = lists.find(x => x.id === parseInt(e.target.value));
+                    if (l) setActiveList(l);
+                  }}
+                  value={activeList?.id}
+                >
+                  {lists.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                </select>
+              )}
             </div>
 
             {activeList && lists.length > 0 && (
-              <div className="flex justify-end mt-1">
+              <div className="flex justify-end">
                 <button onClick={deleteList} className="text-[10px] text-[var(--text-muted)] hover:text-red-400 flex items-center gap-1">
                   <Trash2 size={10} /> Delete List
                 </button>
