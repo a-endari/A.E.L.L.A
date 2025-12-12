@@ -41,6 +41,16 @@ Built to assist with vocabulary acquisition, pronunciation mastery, and knowledg
 - [🔮 Future Roadmap](#-future-roadmap)
 - [📄 License](#-license)
 
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [📦 Installation Guide](docs/INSTALLATION.md) | Complete setup instructions |
+| [📖 Usage Guide](docs/USAGE.md) | How to use all features |
+| [🐳 Docker Guide](docs/DOCKER.md) | Docker configuration & troubleshooting |
+| [🤝 Contributing](docs/CONTRIBUTING.md) | How to contribute |
+| [🏗️ Architecture](docs/ARCHITECTURE.md) | Technical overview |
+
 ---
 
 ## ✨ Features (Planned & In-Progress)
@@ -84,6 +94,8 @@ With Docker, you can run the entire application with a single command, without n
     - The frontend will be available at `http://localhost:3000`
     - The backend API will be running at `http://localhost:8000`
 
+📖 **For detailed Docker instructions, troubleshooting, and advanced usage, see [Docker Guide](docs/DOCKER.md)**
+
 ### Manual Setup
 
 > [!NOTE]
@@ -124,6 +136,23 @@ Visit `http://localhost:3000` to start learning!
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments & Third-Party Credits
+
+A.E.L.L.A. integrates with and is inspired by the following amazing projects:
+
+| Project | Description | License |
+|---------|-------------|---------|
+| [**Anki**](https://apps.ankiweb.net/) | Powerful, intelligent flashcard program | [AGPL-3.0](https://github.com/ankitects/anki/blob/main/LICENSE) |
+| [**Obsidian**](https://obsidian.md/) | Private, flexible note-taking app | Proprietary (free for personal use) |
+| [**Google Translate**](https://translate.google.com/) | Translation and definition service | Google Terms of Service |
+| [**FastAPI**](https://fastapi.tiangolo.com/) | Modern Python web framework | [MIT](https://github.com/tiangolo/fastapi/blob/master/LICENSE) |
+| [**Next.js**](https://nextjs.org/) | React framework for the web | [MIT](https://github.com/vercel/next.js/blob/canary/license.md) |
+| [**Microsoft Edge TTS**](https://github.com/rany2/edge-tts) | Text-to-speech via Edge | [GPL-3.0](https://github.com/rany2/edge-tts/blob/master/LICENSE) |
+
+> **Note**: Anki® and Obsidian® are registered trademarks of their respective owners. A.E.L.L.A. is an independent project and is not affiliated with, endorsed by, or sponsored by Anki or Obsidian.
 
 ---
 
