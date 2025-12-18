@@ -79,11 +79,21 @@ def init_db():
 # --- List Operations ---
 def get_lists() -> List[Dict[str, Any]]:
     conn = get_db_connection()
+    # Ensure "General" list always exists
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM lists WHERE name = 'General'")
+    general_exists = cursor.fetchone()
+    if not general_exists:
+        cursor.execute("INSERT INTO lists (name) VALUES ('General')")
+        conn.commit()
+    
     lists = conn.execute('SELECT * FROM lists').fetchall()
     conn.close()
     return [{"id": l["id"], "name": l["name"]} for l in lists]
 
 def create_list(name: str):
+    if name == "General":
+        return False  # Don't allow duplicate General
     conn = get_db_connection()
     try:
         conn.execute('INSERT INTO lists (name) VALUES (?)', (name,))
@@ -93,6 +103,24 @@ def create_list(name: str):
         return False # duplicate name
     finally:
         conn.close()
+
+def rename_list(list_id: int, new_name: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    # Check if it's the General list
+    cursor.execute("SELECT name FROM lists WHERE id = ?", (list_id,))
+    current = cursor.fetchone()
+    if current and current["name"] == "General":
+        conn.close()
+        return False  # Cannot rename General
+    try:
+        conn.execute('UPDATE lists SET name = ? WHERE id = ?', (new_name, list_id))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.IntegrityError:
+        conn.close()
+        return False  # duplicate name
 
 def delete_list(list_id: int):
     conn = get_db_connection()
@@ -137,6 +165,31 @@ def delete_card(list_id: int, clean_word: str):
     conn.execute('DELETE FROM cards WHERE list_id = ? AND clean_word = ?', (list_id, clean_word))
     conn.commit()
     conn.close()
+
+def update_card(list_id: int, clean_word: str, card_data: Dict[str, Any]):
+    """Updates the data blob for an existing card."""
+    conn = get_db_connection()
+    try:
+        # Check if exists
+        curr = conn.execute(
+            'SELECT 1 FROM cards WHERE list_id = ? AND clean_word = ?',
+            (list_id, clean_word)
+        ).fetchone()
+        
+        if not curr:
+            return False
+
+        conn.execute(
+            'UPDATE cards SET data = ? WHERE list_id = ? AND clean_word = ?',
+            (json.dumps(card_data), list_id, clean_word)
+        )
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error updating card: {e}")
+        return False
+    finally:
+        conn.close()
 
 # Initialize DB on import (or calling init_db manually in main)
 init_db()

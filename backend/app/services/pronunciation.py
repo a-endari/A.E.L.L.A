@@ -12,32 +12,36 @@ def sanitize_filename(text: str) -> str:
     clean = re.sub(r'[^\w\-\.]', '_', text)
     return clean
 
-async def get_audio_url_async(german_word: str) -> Dict[str, Optional[str]]:
+async def get_audio_url_async(text: str, voice: str = "de-DE-KatjaNeural") -> Dict[str, Optional[str]]:
     """
     Generates audio for the given word using Microsoft Edge TTS (free neural voices).
     Saves to local static folder and returns the URL.
     """
-    if not german_word:
-        return {"audio_url": None, "canonical_word": None}
+    if not text:
+        return {"audio_url": None, "original_text": None}
 
-    clean_filename = sanitize_filename(german_word) + ".mp3"
+    # Sanitize filename: text_voice.mp3 to avoid collisions between languages
+    # e.g. "chat" (French) vs "chat" (English)
+    safe_text = sanitize_filename(text)
+    safe_voice = sanitize_filename(voice)
+    clean_filename = f"{safe_text}_{safe_voice}.mp3"
+    
     file_path = os.path.join(STATIC_AUDIO_DIR, clean_filename)
     
     # Check if exists (Simple caching)
     if not os.path.exists(file_path):
         try:
             # Generate Audio
-            # Voice options: de-DE-KatjaNeural, de-DE-ConradNeural, etc.
-            communicate = edge_tts.Communicate(german_word, "de-DE-KatjaNeural")
+            communicate = edge_tts.Communicate(text, voice)
             await communicate.save(file_path)
         except Exception as e:
-            print(f"Error generating TTS for {german_word}: {e}")
-            return {"audio_url": None, "canonical_word": german_word}
+            print(f"Error generating TTS for {text} ({voice}): {e}")
+            return {"audio_url": None, "original_text": text}
 
     # Return the URL
     full_url = f"{BASE_URL}/{STATIC_AUDIO_DIR}/{clean_filename}"
     
     return {
         "audio_url": full_url,
-        "canonical_word": german_word  # We don't have a scraper to tell us the "official" word anymore
+        "original_text": text
     }

@@ -24,15 +24,19 @@ async def translate_text_async(text: str, source: str = 'de', target: str = 'en'
     Generic async translation using GoogleTranslator (deep-translator).
     """
     try:
+        if not text.strip():
+            return ""
+
         loop = asyncio.get_running_loop()
         def _translate():
+            # GoogleTranslator auto-detects if source is 'auto', but we prefer explicit
             translator = GoogleTranslator(source=source, target=target)
             return translator.translate(text)
         
         result = await loop.run_in_executor(None, _translate)
         return result if result else ""
     except Exception as e:
-        print(f"Error translating to {target}: {e}")
+        print(f"Error translating from {source} to {target}: {e}")
         return ""
 
 async def get_word_with_article_async(german_word: str) -> str:
