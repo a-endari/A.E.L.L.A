@@ -253,4 +253,4 @@ npm run build  # Ensures no build errors
 
 ## Recognition
 
-All contributors will be recognized in our README. Thank you for helping make A.E.L.L.A. better! 🎉
+All contributors will be recognized in the README. Thank you for helping make A.E.L.L.A. better! 🎉

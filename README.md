@@ -96,10 +96,25 @@ With Docker, you can run the entire application with a single command, without n
 
 📖 **For detailed Docker instructions, troubleshooting, and advanced usage, see [Docker Guide](docs/DOCKER.md)**
 
+### Automated Setup (Scripts)
+
+We provide helper scripts to set up the environment automatically.
+
+**Mac / Linux:**
+```bash
+chmod +x setup_mac_linux.sh
+./setup_mac_linux.sh
+```
+
+**Windows:**
+```batch
+./setup_windows.bat
+```
+
 ### Manual Setup
 
 > [!NOTE]
-> The following instructions are for setting up the development environment manually. If you just want to run the application, we recommend using the Docker method above.
+> If the scripts fail or you prefer manual control:
 
 ### 1. Backend Setup (API)
 Ensure you have **Python 3.10+** installed.
@@ -128,7 +143,7 @@ Visit `http://localhost:3000` to start learning!
 ## 🔮 Future Roadmap
 
 - [ ] **Electron Integration**: Bundle as a standalone desktop executable.
-- [ ] **Polyglot Mode**: Support for multi-language dictionaries.
+- [x] **Polyglot Mode**: Support for multi-language dictionaries.
 - [ ] **AI Context**: LLM-powered sentence generation for vocab words.
 
 ---
