@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "main": "../electron/main.js",
   "scripts": {
@@ -14,13 +14,43 @@
   "build": {
     "appId": "com.universal.language",
     "productName": "Universal Language",
+    "icon": "build-resources/icon.png",
     "files": [
-      "../electron/**/*",
+      {
+        "from": "../electron",
+        "to": "electron",
+        "filter": [
+          "**/*"
+        ]
+      },
       "out/**/*",
       "package.json"
     ],
+    "extraMetadata": {
+      "main": "electron/main.js"
+    },
+    "extraResources": [
+      {
+        "from": "backend_dist",
+        "to": "backend_dist",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "directories": {
       "output": "dist"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.education"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   },
   "dependencies": {

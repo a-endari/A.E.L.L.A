@@ -42,4 +42,12 @@ app.include_router(lists.router, prefix="/api/lists", tags=["Lists"])
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    import sys
+    
+    # Check if running as a PyInstaller bundle
+    if getattr(sys, 'frozen', False):
+        # Production
+        uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)
+    else:
+        # Development
+        uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

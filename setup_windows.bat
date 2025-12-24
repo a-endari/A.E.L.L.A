@@ -34,23 +34,19 @@ cd ..
 
 echo ✅ Setup Complete!
 echo.
-set /p runNow="🚀 Do you want to run the app now? (Y/N) "
-if /i "%runNow%"=="Y" (
-    echo Starting Backend and Frontend...
+echo 🚀 How would you like to run the app?
+echo 1) Desktop App (Electron) - Recommended
+echo 2) Web Environment (Next.js + Python server)
+set /p choice="Enter choice [1]: "
+if "%choice%"=="" set choice=1
+
+if "%choice%"=="1" (
+    echo Starting Desktop App...
+    npm run dev
+) else (
+    echo Starting Web Environment...
     start "Universal Backend" cmd /k "call .venv\Scripts\activate.bat && cd backend && uvicorn main:app --reload"
     start "Universal Frontend" cmd /k "cd frontend && npm run dev"
     echo Servers started in new windows!
-) else (
-    echo To run manually:
-    echo --------------------------------
-    echo 1. Start Backend (Terminal 1):
-    echo    .venv\Scripts\activate
-    echo    cd backend
-    echo    uvicorn main:app --reload
-    echo.
-    echo 2. Start Frontend (Terminal 2):
-    echo    cd frontend
-    echo    npm run dev
-    echo --------------------------------
 )
 pause

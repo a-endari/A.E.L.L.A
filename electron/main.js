@@ -23,10 +23,16 @@ function createWindow() {
         titleBarStyle: 'hiddenInset', // Mac style
     });
 
-    const startUrl = process.env.ELECTRON_START_URL || `http://localhost:${UI_PORT}`;
+    const isDev = !app.isPackaged;
 
-    // Wait for React to be ready in dev, or load static index.html in prod
-    mainWindow.loadURL(startUrl);
+    if (isDev) {
+        // Development: load from Next.js dev server
+        const startUrl = process.env.ELECTRON_START_URL || `http://localhost:${UI_PORT}`;
+        mainWindow.loadURL(startUrl);
+    } else {
+        // Production: load static files from 'out' directory
+        mainWindow.loadFile(path.join(__dirname, '../out/index.html'));
+    }
 
     mainWindow.on('closed', function () {
         mainWindow = null;
@@ -66,7 +72,15 @@ function startPythonBackend() {
         console.log(`Starting Python backend (Prod): ${command}`);
     }
 
-    pythonProcess = spawn(command, args);
+    const cwd = isDev ? path.join(__dirname, '../backend') : app.getPath('userData');
+    // Ensure userData dir exists
+    if (!isDev) {
+        const fs = require('fs');
+        if (!fs.existsSync(cwd)) fs.mkdirSync(cwd, { recursive: true });
+    }
+
+    console.log(`Spawning Python in CWD: ${cwd}`);
+    pythonProcess = spawn(command, args, { cwd });
 
     pythonProcess.stdout.on('data', (data) => {
         console.log(`[Python]: ${data}`);

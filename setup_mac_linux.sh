@@ -31,15 +31,18 @@ cd ..
 
 echo "✅ Setup Complete!"
 echo ""
-read -p "🚀 Do you want to run the app now? (Y/n) " -n 1 -r
-echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Starting Backend and Frontend..."
-    # Using osascript to open new tabs on standard Mac terminal or just backgrounding it (simpler)
-    # Backgrounding is risky in simple script. Let's just print instructions for now or try to run.
-    # User asked for "one command" to run.
-    
-    # Simple approach: Run backend in background, save PID, run frontend.
+echo "🚀 How would you like to run the app?"
+echo "1) Desktop App (Electron) - Recommended"
+echo "2) Web Environment (Next.js + Python server)"
+read -p "Enter choice [1]: " choice
+choice=${choice:-1}
+
+if [ "$choice" == "1" ]; then
+    echo "Starting Desktop App..."
+    npm run dev
+else
+    echo "Starting Web Environment..."
+    # Background backend
     source .venv/bin/activate
     cd backend
     uvicorn main:app --reload > /dev/null 2>&1 &
@@ -51,22 +54,11 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     FRONTEND_PID=$!
     echo "Frontend started (PID: $FRONTEND_PID)"
     
-    echo "Press any key to stop servers and exit..."
+    echo "Press any key to stop servers..."
     read -n 1
     
     kill $BACKEND_PID
     kill $FRONTEND_PID
-    echo "Servers stopped."
-else
-    echo "To run manually:"
-    echo "--------------------------------"
-    echo "1. Start Backend (Terminal 1):"
-    echo "   source .venv/bin/activate"
-    echo "   cd backend"
-    echo "   uvicorn main:app --reload"
-    echo ""
-    echo "2. Start Frontend (Terminal 2):"
-    echo "   cd frontend"
-    echo "   npm run dev"
-    echo "--------------------------------"
+    echo "Stopped."
 fi
+
