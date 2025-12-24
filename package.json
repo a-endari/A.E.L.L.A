@@ -1,0 +1,14 @@
+{
+    "name": "universal-language-app",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "cd frontend && npm run electron:dev",
+        "build": "cd frontend && npm run electron:build",
+        "lint": "cd frontend && npm run lint",
+        "postinstall": "cd frontend && npm install"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

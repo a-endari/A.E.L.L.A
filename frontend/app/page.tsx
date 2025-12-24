@@ -31,6 +31,7 @@ export default function Home() {
   const [savedCards, setSavedCards] = useState<WordData[]>([]);
   const [lists, setLists] = useState<ListData[]>([]);
   const [activeList, setActiveList] = useState<ListData | null>(null);
+  const [isBackendReady, setIsBackendReady] = useState(false);
 
   // Language Support
   const [sourceLangState, setSourceLangState] = useState("de");
@@ -102,8 +103,31 @@ export default function Home() {
     localStorage.setItem("app-theme-mode", mode);
   }, [theme, mode]);
 
-  // Load Lists on Mount
+  // Check Backend Health and Load Lists
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    const checkBackend = async () => {
+      try {
+        await axios.get("http://localhost:8000/");
+        setIsBackendReady(true);
+        clearInterval(intervalId);
+      } catch {
+        console.log("Waiting for backend...");
+      }
+    };
+
+    // Check immediately then poll
+    checkBackend();
+    intervalId = setInterval(checkBackend, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Load Lists once Backend is Ready
+  useEffect(() => {
+    if (!isBackendReady) return;
+
     const loadLists = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/lists");
@@ -117,7 +141,7 @@ export default function Home() {
     };
     loadLists();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isBackendReady]);
 
   // Load Cards for Active List
   useEffect(() => {
@@ -241,7 +265,7 @@ export default function Home() {
     if (!newListName.trim()) return;
 
     if (newListName.trim().toLowerCase() === 'general') {
-      setNotificationMessage('❌ "General" is a reserved name.');
+      setNotificationMessage('"General" is a reserved name.');
       setNotificationType('error');
       setShowNotification(true);
       return;
@@ -254,11 +278,11 @@ export default function Home() {
       const created = listRes.data.find((l: ListData) => l.name === newListName);
       if (created) setActiveList(created);
       setShowNotification(true);
-      setNotificationMessage('✅ List created successfully!');
+      setNotificationMessage('List created successfully!');
       setNotificationType('success');
       setShowListModal(false);
     } catch {
-      setNotificationMessage('❌ Failed to create list (Duplicate name?)');
+      setNotificationMessage('Failed to create list (Duplicate name?)');
       setNotificationType('error');
       setShowNotification(true);
     }
@@ -269,7 +293,7 @@ export default function Home() {
     if (!listToDelete) return;
 
     if (listToDelete.name === 'General') {
-      setNotificationMessage('❌ Cannot delete the default "General" list.');
+      setNotificationMessage('Cannot delete the default "General" list.');
       setNotificationType('error');
       setShowNotification(true);
       return;
@@ -288,11 +312,11 @@ export default function Home() {
         setSavedCards([]);
       }
 
-      setNotificationMessage('🗑️ List deleted successfully.');
+      setNotificationMessage('List deleted successfully.');
       setNotificationType('success');
       setShowNotification(true);
     } catch {
-      setNotificationMessage('❌ Failed to delete list.');
+      setNotificationMessage('Failed to delete list.');
       setNotificationType('error');
       setShowNotification(true);
     }
@@ -303,7 +327,7 @@ export default function Home() {
     if (!list) return;
 
     if (list.name === 'General') {
-      setNotificationMessage('❌ Cannot rename the default "General" list.');
+      setNotificationMessage('Cannot rename the default "General" list.');
       setNotificationType('error');
       setShowNotification(true);
       return;
@@ -313,11 +337,11 @@ export default function Home() {
       await axios.put(`http://localhost:8000/api/lists/${listId}`, { name: newName });
       const res = await axios.get("http://localhost:8000/api/lists");
       setLists(res.data);
-      setNotificationMessage('✏️ List renamed successfully.');
+      setNotificationMessage('List renamed successfully.');
       setNotificationType('success');
       setShowNotification(true);
     } catch {
-      setNotificationMessage('❌ Failed to rename list (Duplicate name?)');
+      setNotificationMessage('Failed to rename list (Duplicate name?)');
       setNotificationType('error');
       setShowNotification(true);
     }
@@ -407,7 +431,7 @@ export default function Home() {
         setCurrentCardIndex(prev => prev + 1);
       }, 150);
     } else {
-      setNotificationMessage(`🎉 Session Complete! You reviewed ${sessionStats.reviewed + 1} cards.`);
+      setNotificationMessage(`Session Complete! You reviewed ${sessionStats.reviewed + 1} cards.`);
       setNotificationType("success");
       setShowNotification(true);
       setTimeout(() => setLearningMode(false), 2000);
@@ -453,134 +477,141 @@ export default function Home() {
       />
 
       <section className="flex-1 flex flex-col items-center p-6 md:p-12 overflow-y-auto h-screen">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-3xl space-y-12 my-auto"
-        >
-          <div className="text-center space-y-4">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-input)] border border-[var(--border)] text-sm mb-4"
-              style={{ color: 'var(--accent)' }}
-            >
-              <Sparkles size={14} />
-              <span>Universal Language Assistant</span>
-            </motion.div>
-
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-[var(--text-main)]">
-              Learn Any Language <br />
-              <span style={{ color: 'var(--accent)' }}>Your Way.</span>
-            </h1>
-
-            <p className="text-[var(--text-muted)] text-lg leading-relaxed">
-              Your <strong>universal language companion</strong>. Learn any language pair with intelligent flashcards, spaced repetition, and seamless exports to Anki and Obsidian.
-            </p>
+        {!isBackendReady ? (
+          <div className="flex flex-col items-center justify-center h-full space-y-4">
+            <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-[var(--text-muted)] animate-pulse">Starting Language Engine...</p>
           </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-3xl space-y-12 my-auto"
+          >
+            <div className="text-center space-y-4">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-input)] border border-[var(--border)] text-sm mb-4"
+                style={{ color: 'var(--accent)' }}
+              >
+                <Sparkles size={14} />
+                <span>Universal Language Assistant</span>
+              </motion.div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">From</span>
-              <div className="relative">
-                <select
-                  value={sourceLangState}
-                  onChange={(e) => setSourceLangState(e.target.value)}
-                  className="appearance-none bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-main)] py-2 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer hover:bg-[var(--bg-main)] transition-colors min-w-[140px]"
-                >
-                  {supportedLanguages.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.flag} {lang.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-[var(--text-main)]">
+                Learn Any Language <br />
+                <span style={{ color: 'var(--accent)' }}>Your Way.</span>
+              </h1>
+
+              <p className="text-[var(--text-muted)] text-lg leading-relaxed">
+                Your <strong>universal language companion</strong>. Learn any language pair with intelligent flashcards, spaced repetition, and seamless exports to Anki and Obsidian.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">From</span>
+                <div className="relative">
+                  <select
+                    value={sourceLangState}
+                    onChange={(e) => setSourceLangState(e.target.value)}
+                    className="appearance-none bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-main)] py-2 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer hover:bg-[var(--bg-main)] transition-colors min-w-[140px]"
+                  >
+                    {supportedLanguages.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.flag} {lang.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="text-[var(--text-muted)] p-2 bg-[var(--bg-input)] rounded-full">
+                <ArrowRight size={16} />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">To</span>
+                <div className="relative">
+                  <select
+                    value={targetLang}
+                    onChange={(e) => setTargetLang(e.target.value)}
+                    className="appearance-none bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-main)] py-2 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer hover:bg-[var(--bg-main)] transition-colors min-w-[140px]"
+                  >
+                    {supportedLanguages.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.flag} {lang.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="w-px h-8 bg-[var(--border)] mx-2 hidden md:block" />
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider whitespace-nowrap">2nd Lang</span>
+                <div className="relative">
+                  <select
+                    value={secondaryTargetLang}
+                    onChange={(e) => setSecondaryTargetLang(e.target.value)}
+                    className="appearance-none bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-main)] py-2 pl-4 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer hover:bg-[var(--bg-main)] transition-colors min-w-[120px]"
+                  >
+                    <option value="">(None)</option>
+                    {supportedLanguages.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.flag} {lang.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+                </div>
               </div>
             </div>
 
-            <div className="text-[var(--text-muted)] p-2 bg-[var(--bg-input)] rounded-full">
-              <ArrowRight size={16} />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">To</span>
-              <div className="relative">
-                <select
-                  value={targetLang}
-                  onChange={(e) => setTargetLang(e.target.value)}
-                  className="appearance-none bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-main)] py-2 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer hover:bg-[var(--bg-main)] transition-colors min-w-[140px]"
-                >
-                  {supportedLanguages.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.flag} {lang.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+            <form onSubmit={handleSearch} className="relative max-w-xl mx-auto w-full group">
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[var(--text-muted)] transition-colors">
+                <Search size={20} />
               </div>
-            </div>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={`Type a ${supportedLanguages.find(l => l.code === sourceLangState)?.name} word...`}
+                className="w-full bg-[var(--bg-input)] border border-[var(--border)] rounded-2xl py-5 pl-12 pr-6 text-xl text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all shadow-xl shadow-black/5"
+              />
+              <button
+                type="submit"
+                disabled={loading || !query}
+                className="absolute inset-y-2 right-2 px-4 bg-[var(--bg-input)] hover:bg-[var(--border)] text-[var(--text-main)] rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <ArrowRight size={20} />
+                )}
+              </button>
+            </form>
 
-            <div className="w-px h-8 bg-[var(--border)] mx-2 hidden md:block" />
-
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider whitespace-nowrap">2nd Lang</span>
-              <div className="relative">
-                <select
-                  value={secondaryTargetLang}
-                  onChange={(e) => setSecondaryTargetLang(e.target.value)}
-                  className="appearance-none bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-main)] py-2 pl-4 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer hover:bg-[var(--bg-main)] transition-colors min-w-[120px]"
-                >
-                  <option value="">(None)</option>
-                  {supportedLanguages.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.flag} {lang.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
-              </div>
-            </div>
-          </div>
-
-          <form onSubmit={handleSearch} className="relative max-w-xl mx-auto w-full group">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[var(--text-muted)] transition-colors">
-              <Search size={20} />
-            </div>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={`Type a ${supportedLanguages.find(l => l.code === sourceLangState)?.name} word...`}
-              className="w-full bg-[var(--bg-input)] border border-[var(--border)] rounded-2xl py-5 pl-12 pr-6 text-xl text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all shadow-xl shadow-black/5"
+            <SearchResults
+              data={data!}
+              error={error}
+              supportedLanguages={supportedLanguages}
+              sourceLangState={sourceLangState}
+              targetLang={targetLang}
+              secondaryTargetLang={secondaryTargetLang}
+              playAudio={playAudio}
+              toggleSave={toggleSave}
+              isSaved={isSaved}
+              searchForWord={searchForWord}
             />
-            <button
-              type="submit"
-              disabled={loading || !query}
-              className="absolute inset-y-2 right-2 px-4 bg-[var(--bg-input)] hover:bg-[var(--border)] text-[var(--text-main)] rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <ArrowRight size={20} />
-              )}
-            </button>
-          </form>
 
-          <SearchResults
-            data={data!}
-            error={error}
-            supportedLanguages={supportedLanguages}
-            sourceLangState={sourceLangState}
-            targetLang={targetLang}
-            secondaryTargetLang={secondaryTargetLang}
-            playAudio={playAudio}
-            toggleSave={toggleSave}
-            isSaved={isSaved}
-            searchForWord={searchForWord}
-          />
-
-        </motion.div>
+          </motion.div>
+        )}
       </section>
 
       <LearningOverlay
