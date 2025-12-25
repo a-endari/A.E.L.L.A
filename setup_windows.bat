@@ -1,6 +1,6 @@
 @echo off
 setlocal
-echo 🚀 Setting up Universal Language App...
+echo 🚀 Setting up AELLA...
 
 :: Check for Python
 python --version >nul 2>&1
@@ -45,8 +45,8 @@ if "%choice%"=="1" (
     npm run dev
 ) else (
     echo Starting Web Environment...
-    start "Universal Backend" cmd /k "call .venv\Scripts\activate.bat && cd backend && uvicorn main:app --reload"
-    start "Universal Frontend" cmd /k "cd frontend && npm run dev"
+    start "AELLA Backend" cmd /k "call .venv\Scripts\activate.bat && cd backend && uvicorn main:app --reload"
+    start "AELLA Frontend" cmd /k "cd frontend && npm run dev"
     echo Servers started in new windows!
 )
 pause

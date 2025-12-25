@@ -1,6 +1,6 @@
 # 📖 Usage Guide
 
-Learn how to use A.E.L.L.A. (Universal Language App) effectively.
+Learn how to use AELLA effectively.
 
 ---
 
@@ -8,7 +8,7 @@ Learn how to use A.E.L.L.A. (Universal Language App) effectively.
 
 After [installing](INSTALLATION.md) and starting the app, open your browser to:
 
-- **http://localhost:3000** (default)
+- **<http://localhost:3000>** (default)
 
 ---
 
@@ -16,9 +16,10 @@ After [installing](INSTALLATION.md) and starting the app, open your browser to:
 
 ### 🔍 Word Lookup
 
-The main feature of A.E.L.L.A. is looking up German words and getting comprehensive information.
+The main feature of AELLA is looking up German words and getting comprehensive information.
 
 **How to use**:
+
 1. Type a German word in the search box
 2. Press Enter or click the search button
 3. View the results including:
@@ -32,19 +33,23 @@ The main feature of A.E.L.L.A. is looking up German words and getting comprehens
 Organize your learning with custom vocabulary lists.
 
 **Creating a List**:
+
 1. Click the "+" button in the sidebar
 2. Enter a name for your list
 3. Click Create
 
 **Adding Words to a List**:
+
 1. Search for a word
 2. Click "Save" to add it to the currently active list
 
 **Switching Lists**:
+
 1. Click on any list in the sidebar to make it active
 2. The active list is highlighted
 
 **Deleting a List**:
+
 1. Select the list
 2. Click the delete button
 3. Confirm deletion
@@ -54,12 +59,14 @@ Organize your learning with custom vocabulary lists.
 Export your vocabulary to [Anki](https://apps.ankiweb.net/) for spaced repetition learning.
 
 **How to export**:
+
 1. Select a vocabulary list
 2. Click "Export to Anki"
 3. A `.apkg` file will download
 4. Open Anki and import the file
 
 **Card Format**:
+
 - **Front**: German word with pronunciation
 - **Back**: Definitions in English and Persian, examples
 
@@ -68,12 +75,14 @@ Export your vocabulary to [Anki](https://apps.ankiweb.net/) for spaced repetitio
 Export your vocabulary to [Obsidian](https://obsidian.md/) for knowledge management.
 
 **How to export**:
+
 1. Select a vocabulary list
 2. Click "Export to Obsidian"
 3. A `.md` file will download
 4. Move the file to your Obsidian vault
 
 **Note Format**:
+
 - Structured with YAML frontmatter
 - Includes all word data
 - Uses collapsible callouts for organization
@@ -83,16 +92,19 @@ Export your vocabulary to [Obsidian](https://obsidian.md/) for knowledge managem
 ## Interface Overview
 
 ### Sidebar (Left)
+
 - 📚 **Vocabulary Lists**: All your saved lists
 - ➕ **Add List**: Create new list button
 - 🎨 **Theme Selector**: Switch between visual themes
 
 ### Main Area (Center)
+
 - 🔍 **Search Bar**: Enter words to look up
 - 📋 **Results Panel**: View word information
 - 💾 **Save Button**: Add word to current list
 
 ### Controls (Right/Top)
+
 - 📤 **Export Buttons**: Anki and Obsidian export
 - 🗑️ **Delete**: Remove current list
 
@@ -109,7 +121,7 @@ Export your vocabulary to [Obsidian](https://obsidian.md/) for knowledge managem
 
 ## Themes
 
-A.E.L.L.A. comes with multiple beautiful themes:
+AELLA comes with multiple beautiful themes:
 
 | Theme | Description |
 |-------|-------------|
@@ -119,6 +131,7 @@ A.E.L.L.A. comes with multiple beautiful themes:
 | **Ayu Mirage** | Warm dark theme |
 
 **Changing Themes**:
+
 1. Click the theme selector in the sidebar
 2. Choose your preferred theme
 3. Theme is saved automatically
@@ -159,6 +172,7 @@ A.E.L.L.A. comes with multiple beautiful themes:
 The backend server is not running.
 
 **Solutions**:
+
 - If using Docker: Check that containers are running with `docker ps`
 - If manual: Ensure the backend is running on port 8000
 
@@ -167,6 +181,7 @@ The backend server is not running.
 Audio file might not be available.
 
 **Solutions**:
+
 - Check your browser's volume
 - Try a different word
 - Some rare words may not have audio
@@ -176,6 +191,7 @@ Audio file might not be available.
 The API may be fetching from external sources.
 
 **Solutions**:
+
 - First searches are slower (caching happens)
 - Subsequent searches for the same word will be faster
 

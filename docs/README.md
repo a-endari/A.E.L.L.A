@@ -1,6 +1,6 @@
 # 📚 Documentation
 
-Welcome to the A.E.L.L.A. documentation!
+Welcome to the A.E.L.L.A documentation!
 
 ## Quick Links
 

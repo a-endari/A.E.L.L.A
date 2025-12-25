@@ -8,8 +8,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Universal Language App",
-  description: "Learn languages with ease. Universal. Simple. Powerful.",
+  title: "AELLA - Universal Language App",
+  description: "Your AI-Enhanced Language Learning Assistant. Create flashcards, export to Anki & Obsidian.",
 };
 
 export default function RootLayout({

@@ -1,6 +1,6 @@
 # 🤝 Contributing Guidelines
 
-Thank you for your interest in contributing to A.E.L.L.A.! This document outlines the standards and processes for contributing to the project.
+Thank you for your interest in contributing to AELLA! This document outlines the standards and processes for contributing to the project.
 
 ---
 
@@ -33,6 +33,7 @@ By participating in this project, you agree to maintain a welcoming, inclusive e
 ### 📝 Improving Documentation
 
 Documentation improvements are always welcome! This includes:
+
 - Fixing typos
 - Clarifying instructions
 - Adding examples
@@ -75,16 +76,19 @@ UniversalLanguageApp/
 ### Python (Backend)
 
 **Style**:
+
 - Follow [PEP 8](https://peps.python.org/pep-0008/)
 - Use type hints
 - Maximum line length: 100 characters
 
 **Naming Conventions**:
+
 - `snake_case` for functions and variables
 - `PascalCase` for classes
 - `UPPER_CASE` for constants
 
 **Example**:
+
 ```python
 from typing import Optional
 
@@ -106,16 +110,19 @@ async def fetch_word_definition(word: str) -> Optional[dict]:
 ### TypeScript/React (Frontend)
 
 **Style**:
+
 - Use TypeScript for all new code
 - Functional components with hooks
 - Use CSS Modules for styling
 
 **Naming Conventions**:
+
 - `camelCase` for functions and variables
 - `PascalCase` for components and types
 - File names should match component names
 
 **Example**:
+
 ```typescript
 interface WordCardProps {
   word: string;
@@ -141,11 +148,13 @@ export function WordCard({ word, definition, onSave }: WordCardProps) {
 ### CSS
 
 **Style**:
+
 - Use CSS Modules (`.module.css`)
 - Use CSS custom properties for theming
 - Mobile-first responsive design
 
 **Naming Conventions**:
+
 - `camelCase` for class names in CSS Modules
 - Descriptive, component-scoped names
 
@@ -164,6 +173,7 @@ Follow the [Conventional Commits](https://www.conventionalcommits.org/) standard
 ```
 
 **Types**:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -173,6 +183,7 @@ Follow the [Conventional Commits](https://www.conventionalcommits.org/) standard
 - `chore`: Maintenance tasks
 
 **Examples**:
+
 ```
 feat(frontend): add dark mode theme support
 
@@ -253,4 +264,4 @@ npm run build  # Ensures no build errors
 
 ## Recognition
 
-All contributors will be recognized in the README. Thank you for helping make A.E.L.L.A. better! 🎉
+All contributors will be recognized in the README. Thank you for helping make AELLA better! 🎉

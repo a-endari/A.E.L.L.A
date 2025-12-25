@@ -1,6 +1,7 @@
 # 🐳 Docker Quick Start
 
 ## Prerequisites
+
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
 
 ## Option 1: Use Pre-built Images (Fastest)
@@ -35,18 +36,20 @@ docker-compose up --build
 ## Running with Docker
 
 1. **Start the application**
+
    ```bash
    docker-compose up
    ```
 
-3. **Access the app**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Docs: http://localhost:8000/docs
+2. **Access the app**
+   - Frontend: <http://localhost:3000>
+   - Backend API: <http://localhost:8000>
+   - API Docs: <http://localhost:8000/docs>
 
 ## Development Mode
 
 The Docker setup includes hot-reloading for both frontend and backend:
+
 - **Backend**: Automatically reloads on Python file changes
 - **Frontend**: Automatically rebuilds on React/Next.js file changes
 
@@ -70,6 +73,7 @@ docker-compose up --build
 ## Troubleshooting
 
 **Port already in use?**
+
 ```bash
 # Change ports in docker-compose.yml
 # Frontend: "3001:3000" instead of "3000:3000"
@@ -77,6 +81,7 @@ docker-compose up --build
 ```
 
 **Containers won't start?**
+
 ```bash
 # Clean rebuild
 docker-compose down -v

@@ -1,6 +1,6 @@
 # 🏗️ Architecture Overview
 
-Technical documentation for developers working on A.E.L.L.A.
+Technical documentation for developers working on AELLA.
 
 ---
 
@@ -42,6 +42,7 @@ Technical documentation for developers working on A.E.L.L.A.
 ## Frontend Architecture
 
 ### Tech Stack
+
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
 - **Styling**: CSS Modules + CSS Custom Properties
@@ -49,6 +50,7 @@ Technical documentation for developers working on A.E.L.L.A.
 - **Animations**: Framer Motion
 
 ### Directory Structure
+
 ```
 frontend/
 ├── app/
@@ -62,12 +64,15 @@ frontend/
 ```
 
 ### State Management
+
 - Local React state with `useState`
 - No external state library (app is simple enough)
 - Theme state persisted in `localStorage`
 
 ### Theming System
+
 Themes use CSS custom properties defined in separate files:
+
 ```css
 /* Example theme structure */
 :root[data-theme="midnight"] {
@@ -82,12 +87,14 @@ Themes use CSS custom properties defined in separate files:
 ## Backend Architecture
 
 ### Tech Stack
+
 - **Framework**: FastAPI (Python 3.10+)
 - **Database**: SQLite with raw SQL
 - **TTS**: Microsoft Edge TTS (edge-tts library)
 - **Translation**: Google Translate (googletrans)
 
 ### Directory Structure
+
 ```
 backend/
 ├── main.py              # FastAPI app and routes
@@ -138,6 +145,7 @@ CREATE TABLE cards (
 ## Data Flow
 
 ### Word Lookup Flow
+
 ```
 1. User enters word → Frontend
 2. POST /api/lookup → Backend
@@ -148,6 +156,7 @@ CREATE TABLE cards (
 ```
 
 ### Export Flow (Anki)
+
 ```
 1. User clicks "Export to Anki" → Frontend
 2. POST /api/anki/download with card data → Backend
@@ -166,6 +175,7 @@ CREATE TABLE cards (
 | **Microsoft Edge TTS** | Audio pronunciation | No hard limit (free) |
 
 ### Caching Strategy
+
 - Audio files are cached in `backend/static/audio/`
 - Cached by word hash to avoid duplicates
 - Cleanup job removes unused audio on startup
@@ -187,6 +197,7 @@ services:
 ```
 
 ### Network
+
 - Docker creates internal network `universallanguageapp_default`
 - Frontend connects to backend via `http://backend:8000`
 - Both services exposed to host on their respective ports

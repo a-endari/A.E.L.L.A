@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Setting up Universal Language App..."
+echo "🚀 Setting up AELLA..."
 
 # Check for Python
 if ! command -v python3 &> /dev/null; then

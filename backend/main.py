@@ -7,7 +7,7 @@ from app.services.audio import cleanup_unused_audio
 from app.services.db import init_db
 from app.routers import lookup, anki, lists, obsidian
 
-app = FastAPI(title="Universal Language App API")
+app = FastAPI(title="AELLA API")
 
 # Configure CORS
 app.add_middleware(
@@ -32,7 +32,7 @@ async def startup_event():
 
 @app.get("/")
 async def root():
-    return {"message": "Universal Language App API is running!"}
+    return {"message": "AELLA's API is running!"}
 
 # Include Routers
 app.include_router(lookup.router, prefix="/api", tags=["Lookup"])

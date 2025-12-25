@@ -1,6 +1,6 @@
 # 📦 Installation Guide
 
-Complete installation instructions for A.E.L.L.A. (Universal Language App).
+Complete installation instructions for AELLA.
 
 ## Prerequisites
 
@@ -20,6 +20,7 @@ The fastest way to get started. No need to install Python or Node.js.
 ### Step 1: Install Docker Desktop
 
 Download and install [Docker Desktop](https://docs.docker.com/get-docker/) for your operating system:
+
 - **macOS**: [Download](https://docs.docker.com/desktop/install/mac-install/)
 - **Windows**: [Download](https://docs.docker.com/desktop/install/windows-install/) (requires WSL2)
 - **Linux**: [Download](https://docs.docker.com/desktop/install/linux-install/)
@@ -41,13 +42,14 @@ docker-compose up --build
 
 | Service | URL |
 |---------|-----|
-| **Frontend (App)** | http://localhost:3000 |
-| **Backend API** | http://localhost:8000 |
-| **API Docs** | http://localhost:8000/docs |
+| **Frontend (App)** | <http://localhost:3000> |
+| **Backend API** | <http://localhost:8000> |
+| **API Docs** | <http://localhost:8000/docs> |
 
 ### Stopping the Application
 
 Press `Ctrl+C` in the terminal, then:
+
 ```bash
 docker-compose down
 ```
@@ -122,8 +124,8 @@ Open your browser and go to `http://localhost:3000`
 
 After starting the app, verify everything works:
 
-1. ✅ **Frontend loads**: Visit http://localhost:3000 and see the UI
-2. ✅ **Backend responds**: Visit http://localhost:8000/docs and see the API documentation
+1. ✅ **Frontend loads**: Visit <http://localhost:3000> and see the UI
+2. ✅ **Backend responds**: Visit <http://localhost:8000/docs> and see the API documentation
 3. ✅ **Connection works**: Search for a word in the app and verify results appear
 
 ---
@@ -135,6 +137,7 @@ After starting the app, verify everything works:
 Another application is using port 3000 or 8000.
 
 **Solution**: Change ports in `docker-compose.yml`:
+
 ```yaml
 ports:
   - "3001:3000"  # Change frontend port
@@ -152,8 +155,9 @@ Docker Desktop is not running.
 Python or Node.js is not installed or not in PATH.
 
 **Solution**: Install from official websites:
-- Python: https://python.org/downloads/
-- Node.js: https://nodejs.org/
+
+- Python: <https://python.org/downloads/>
+- Node.js: <https://nodejs.org/>
 
 ### Manual: "Module not found" errors
 

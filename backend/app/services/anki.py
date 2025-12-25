@@ -143,7 +143,7 @@ def create_deck(
     # Define the Model
     model = genanki.Model(
         1607392319,
-        'Universal Language App Model V2',
+        'AELLA Card Model V2',
         fields=[
             {'name': 'Source'},
             {'name': 'Target'},
@@ -162,7 +162,7 @@ def create_deck(
                   <div class="word">{{{{Source}}}}</div>
                 </div>
                 <div class="footer">
-                   Created with <a href="https://github.com/a-endari/A.E.L.L.A.">A.E.L.L.A.</a>
+                   Created with <a href="https://github.com/a-endari/A.E.L.L.A">AELLA</a>
                 </div>
                 """,
                 'afmt': f"""
@@ -190,7 +190,7 @@ def create_deck(
                   {{{{/Secondary}}}}
                 </div>
                 <div class="footer">
-                   Created with <a href="https://github.com/a-endari/A.E.L.L.A.">A.E.L.L.A.</a>
+                   Created with <a href="https://github.com/a-endari/A.E.L.L.A">AELLA</a>
                 </div>
                 """,
             },
