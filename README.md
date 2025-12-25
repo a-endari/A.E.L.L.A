@@ -20,6 +20,10 @@ Download the latest release for your platform:
 - 🍎 **[macOS (.dmg)](https://github.com/a-endari/A.E.L.L.A/releases/latest)**
 - 🪟 **[Windows (.exe)](https://github.com/a-endari/A.E.L.L.A/releases/latest)**
 
+> [!TIP]
+> **macOS Users:** If you see a "damaged app" warning, run this in your terminal:
+> `sudo xattr -rd com.apple.quarantine /Applications/AELLA.app`
+
 ### Run from Source
 
 Check out the **[Installation Guide](docs/INSTALLATION.md)** for detailed instructions.

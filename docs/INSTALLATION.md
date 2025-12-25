@@ -165,6 +165,21 @@ Dependencies are not installed.
 
 **Solution**: Run `pip install -r requirements.txt` (backend) or `npm install` (frontend).
 
+### macOS: "App is damaged and can't be opened"
+
+This is a security feature (Gatekeeper) because the app is not signed with an Apple Developer account.
+
+**Solution**:
+
+1. Move AELLA to your `/Applications` folder.
+2. Open Terminal and run:
+
+   ```bash
+   sudo xattr -rd com.apple.quarantine /Applications/AELLA.app
+   ```
+
+3. Alternatively, **Right-click** the app, select **Open**, and confirm.
+
 ---
 
 ## Updating
