@@ -7,4 +7,5 @@ aiofiles
 genanki
 deep-translator
 python-multipart
-edge-ttspyinstaller
+edge-tts
+pyinstaller
