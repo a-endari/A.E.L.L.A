@@ -1,6 +1,13 @@
 {
-  "name": "frontend",
-  "version": "1.0.0",
+  "name": "aella",
+  "version": "1.0.1",
+  "description": "AELLA - AI-Enhanced Language Learning Assistant. Create flashcards, export to Anki & Obsidian.",
+  "author": "Abbas Endari <a-endari@github.com>",
+  "homepage": "https://github.com/a-endari/A.E.L.L.A",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/a-endari/A.E.L.L.A.git"
+  },
   "private": true,
   "main": "../electron/main.js",
   "scripts": {
