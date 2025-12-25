@@ -8,4 +8,3 @@ genanki
 deep-translator
 python-multipart
 edge-tts
-pyinstaller
