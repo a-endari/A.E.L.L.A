@@ -9,7 +9,16 @@
 
 AELLA is a powerful, privacy-focused tool that helps you create high-quality vocabulary flashcards. It finds definitions, audio pronunciations, and synonyms automatically, then lets you export them to **Anki** or **Obsidian**.
 
-![App Screenshot](screenshots/app_preview.png)
+<!-- add title for each screenshot -->
+## Screenshots
+### Midnight (default theme)
+![App Screenshot Midnight](screenshots/ScreenShot_Midnight.png)
+### Tokyo Night (theme)
+![Screenshot Tokyo Night](screenshots/ScreenShot_TokyoNight.png)
+### Ayu Mirage (theme)
+![Screenshot Ayu Mirage](screenshots/ScreenShot_AyuMirage.png)
+### Paper (theme)
+![Screenshot Paper](screenshots/ScreenShot_Paper.png)
 
 ## 🚀 Getting Started
 
